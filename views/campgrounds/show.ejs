@@ -9,6 +9,12 @@
     <h1><%= campgrounds.title %></h1>
     <li><%= campgrounds.location %></li>
     <li><%= campgrounds.price %></li>
+    <p><a href="/campgrounds/<%= campgrounds._id %>/edit">Edit Campground</a></p>
+    <p>
+        <form action="/campgrounds/<%= campgrounds._id %>?_method=DELETE" method="POST">
+            <button>Delete Campground</button>
+        </form>
+    </p>
     <a href="/campgrounds">All Campgrounds</a>
 </body>
 </html>
