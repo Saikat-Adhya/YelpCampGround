@@ -4,12 +4,17 @@ const path = require('path');
 const Campground = require('./models/campground');
 const methodOveride = require('method-override');
 
-mongoose.connect('mongodb://localhost:27017/yelp_camp');
-const db = mongoose.connection
-db.on("error",console.error.bind(console,"connection error:"));
-db.once("open",()=>{
-    console.log("database connected");
-})
+const dbURI = 'mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual URI
+
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
+// mongoose.connect('mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+// const db = mongoose.connection
+// db.on("error",console.error.bind(console,"connection error:"));
+// db.once("open",()=>{
+//     console.log("database connected");
+// })
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -50,6 +55,7 @@ app.delete('/campgrounds/:id',async(req,res)=>{
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds')
 })
-app.listen(3000,()=>{
-    console.log('server started at portnumber 3000');
+const PORT= 3000;
+app.listen(PORT,()=>{
+    console.log(`server started at portnumber ${PORT}`);
 })
