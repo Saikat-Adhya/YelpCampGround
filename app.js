@@ -6,7 +6,7 @@ const methodOveride = require('method-override');
 
 const dbURI = 'mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual URI
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(dbURI,)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 // mongoose.connect('mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
