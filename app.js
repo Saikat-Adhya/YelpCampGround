@@ -9,11 +9,11 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const Campground = require('./models/campground');
 const User = require('./models/user'); // User model for authentication
+const dotenv = require('dotenv');
 
-const dbURI = 'mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-
+dotenv.config(); //Dot ENV Config
 // Connect to MongoDB
-mongoose.connect(dbURI)
+mongoose.connect(process.env.dbURI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
