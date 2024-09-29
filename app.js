@@ -8,7 +8,7 @@ const methodOverride = require('method-override');
 const session = require('express-session');
 const flash = require('connect-flash');
 const Campground = require('./models/campground');
-const User = require('./models/user');  // User model for authentication
+const User = require('./models/user'); // User model for authentication
 
 const dbURI = 'mongodb+srv://admin:admin@cluster0.bjezc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -28,7 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(session({
-    secret: 'your_secret_key',  // Replace with your own secret
+    secret: 'your_secret_key', // Replace with your own secret
     resave: false,
     saveUninitialized: true
 }));
@@ -79,6 +79,7 @@ function isLoggedIn(req, res, next) {
 app.use((req, res, next) => {
     res.locals.errorMessage = req.flash('error');
     res.locals.successMessage = req.flash('success');
+    res.locals.user = req.user; // Make user available in all templates
     next();
 });
 
@@ -123,7 +124,7 @@ app.post('/login', (req, res, next) => {
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
-            return res.redirect('/dashboard');  // Redirect to dashboard
+            return res.redirect('/dashboard'); // Redirect to dashboard
         });
     })(req, res, next);
 });
@@ -187,11 +188,10 @@ app.delete('/delete-account', isLoggedIn, async (req, res) => {
 
 // Campground Routes
 
-// List all campgrounds
 // List all campgrounds (requires authentication)
 app.get('/campgrounds', isLoggedIn, async (req, res) => {
     try {
-        const campgrounds = await Campground.find({});
+        const campgrounds = await Campground.find({ author: req.user._id }); // Only fetch campgrounds created by the user
         res.render('campgrounds/index', { campgrounds, user: req.user }); // Pass user to the template
     } catch (err) {
         console.error(err);
@@ -200,7 +200,6 @@ app.get('/campgrounds', isLoggedIn, async (req, res) => {
     }
 });
 
-
 // Form to add new campground (Requires authentication)
 app.get('/campgrounds/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
@@ -208,38 +207,92 @@ app.get('/campgrounds/new', isLoggedIn, (req, res) => {
 
 // Create new campground (Requires authentication)
 app.post('/campgrounds', isLoggedIn, async (req, res) => {
-    const campgrounds = await Campground.create(req.body.campground);
-    res.redirect(`/campgrounds/${campgrounds._id}`);
+    try {
+        const campgroundData = { ...req.body.campground, author: req.user._id }; // Include the author's ID
+        const campgrounds = await Campground.create(campgroundData);
+        res.redirect(`/campgrounds/${campgrounds._id}`);
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Error creating campground.');
+        res.redirect('/campgrounds/new');
+    }
 });
 
 // Show a single campground
-app.get('/campgrounds/:id', async (req, res) => {
-    const campgrounds = await Campground.findById(req.params.id);
-    res.render('campgrounds/show', { campgrounds });
+app.get('/campgrounds/:id', isLoggedIn, async (req, res) => {
+    try {
+        const campgrounds = await Campground.findById(req.params.id);
+        // Check if the logged-in user is the author
+        if (!campgrounds || !campgrounds.author.equals(req.user._id)) {
+            req.flash('error', 'You do not have permission to view this campground.');
+            return res.redirect('/campgrounds');
+        }
+        res.render('campgrounds/show', { campgrounds });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Error fetching campground.');
+        res.redirect('/campgrounds');
+    }
 });
 
 // Edit campground form (Requires authentication)
 app.get('/campgrounds/:id/edit', isLoggedIn, async (req, res) => {
-    const campgrounds = await Campground.findById(req.params.id);
-    res.render('campgrounds/edit', { campgrounds });
+    try {
+        const campgrounds = await Campground.findById(req.params.id);
+        // Check if the logged-in user is the author
+        if (!campgrounds || !campgrounds.author.equals(req.user._id)) {
+            req.flash('error', 'You do not have permission to edit this campground.');
+            return res.redirect('/campgrounds');
+        }
+        res.render('campgrounds/edit', { campgrounds});
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Error fetching campground for editing.');
+        res.redirect('/campgrounds');
+    }
 });
 
 // Update a campground (Requires authentication)
 app.put('/campgrounds/:id', isLoggedIn, async (req, res) => {
     const { id } = req.params;
-    const campgrounds = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
-    res.redirect(`/campgrounds/${campgrounds._id}`);
+    try {
+        const campgrounds = await Campground.findById(id);
+        // Check if the logged-in user is the author
+        if (!campgrounds || !campgrounds.author.equals(req.user._id)) {
+            req.flash('error', 'You do not have permission to update this campground.');
+            return res.redirect('/campgrounds');
+        }
+        await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+        res.redirect(`/campgrounds/${campgrounds._id}`);
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Error updating campground.');
+        res.redirect('/campgrounds');
+    }
 });
 
 // Delete a campground (Requires authentication)
 app.delete('/campgrounds/:id', isLoggedIn, async (req, res) => {
     const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.redirect('/campgrounds');
+    try {
+        const campgrounds = await Campground.findById(id);
+        // Check if the logged-in user is the author
+        if (!campgrounds || !campgrounds.author.equals(req.user._id)) {
+            req.flash('error', 'You do not have permission to delete this campground.');
+            return res.redirect('/campgrounds');
+        }
+        await Campground.findByIdAndDelete(id);
+        req.flash('success', 'Campground deleted successfully.');
+        res.redirect('/campgrounds');
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Error deleting campground.');
+        res.redirect('/campgrounds');
+    }
 });
 
 // Start the server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
