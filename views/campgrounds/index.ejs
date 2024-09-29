@@ -3,50 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All CampGrounds</title>
+    <title>All Campgrounds</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            background-color: black;
+        }
+        h1{
+            color: aqua;
+        }
+        h3{
+            color: aliceblue;
+        }
+    </style>
 </head>
-<style>
-    .body {
-        background-color: rgb(190, 245, 245);
-        display: flex;
-        flex-direction: column; /* Stack items vertically */
-        align-items: center; /* Center items horizontally */
-        justify-content: center; /* Center items vertically */
-        height: 100vh; /* Make sure the body takes full viewport height */
-        margin: 0; /* Remove default margin */
-    }
-    ul {
-        list-style-type: none; /* Remove bullet points */
-        padding: 0; /* Remove default padding */
-    }
-    li {
-        margin: 10px 0; /* Add some spacing between list items */
-    }
-    button{
-        padding: 10px 20px;
-        border: 3px solid red;
-        font-size: 20px;
-        border-radius: 100px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    button:hover{
-        background-color: rgb(158, 136, 180);
-        color: aliceblue;
-    }
-    li a{
-        font-size: 25px;
-    }
-</style>
-<body class="body">
-    <h1><u><b>All campgrounds</b></u></h1>
-    <ul>
-        <h3><i><b>Created Campgrounds:-</b></i></h3>
-        <% for(let campground of campgrounds) {%>
-            <li><a href="/campgrounds/<%= campground._id %>"><%= campground.title %></a></li>
-        <% } %> 
-    </ul>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Campgrounds</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/campgrounds/new">Create New Campground</a>
+                    </li>
+                    <% if (user) { %> <!-- Check if user is logged in -->
+                        <li class="nav-item">
+                            <form action="/logout" method="GET" style="display:inline;">
+                                <button type="submit" class="nav-link btn btn-link" style="color: rgb(239, 24, 24); background-color: rgb(113, 201, 113); font-weight: bold;">Logout</button>
+                            </form>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        <button><a href="/campgrounds/new">Create Campground</a></button>
+    <div class="container text-center mt-5">
+        <h1 class="text-decoration-underline"><b>All Campgrounds</b></h1>
+        <h3 class="mt-4"><i><b>Created Campgrounds:</b></i></h3>
+
+        <div class="row mt-4">
+            <% for (let campground of campgrounds) { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= campground.title %></h5>
+                            <p class="card-text"><strong>Location:</strong> <%= campground.location %></p>
+                            <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            <% } %> 
+        </div>
+
+        <div class="mt-4">
+            <a href="/campgrounds/new" class="btn btn-success btn-lg">Create New Campground</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
