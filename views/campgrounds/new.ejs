@@ -6,9 +6,101 @@
     <title>New Campground</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Soft orange gradient */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #ff7e5f;
+        }
+
+        .nav-link {
+            color: #ff7e5f !important;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #ff7e5f;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-label {
+            color: #ff7e5f;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ff7e5f;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 5px 1px #ff7e5f;
+            border-color: #ff7e5f;
+        }
+
+        .btn-primary {
+            background-color: #ff7e5f;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: #feb47b;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: #feb47b;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: #ff7e5f;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-center {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="/">Campgrounds</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +117,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Add New Campground</h1>
+        <h1>Add New Campground</h1>
         <form action="/campgrounds" method="POST">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
@@ -43,8 +135,8 @@
                 <button type="submit" class="btn btn-primary">Add Campground</button>
             </div>
         </form>
-        <br>
-        <div class="text-center">
+
+        <div class="text-center mt-4">
             <a href="/campgrounds" class="btn btn-secondary">View All Campgrounds</a>
         </div>
     </div>
